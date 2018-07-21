@@ -197,7 +197,7 @@ void printvector(vector<string> &ret)
 {   vector<string>::iterator iter;
     for (iter =ret.begin();iter != ret.end();++iter)
          {
-            cout << *iter <<endl;
+            cout << *iter <<" ";
          }
 }
 
@@ -219,7 +219,6 @@ void printmap(map<string,double>&map_to_print)
          }
 }
 
-//void searchoccupation(map<string,int>&map_of_occupation,class user)
 
  void count_occupation(vector<user> &us,map<string,int>& oc)
  {   map<string,int>::iterator iter_map;
@@ -230,6 +229,7 @@ void printmap(map<string,double>&map_to_print)
             (*iter_map).second++;
         }
  }
+
 vector<map <string,double> > cal_rate_by_oc(vector<user> &us,map<string,int>& oc,vector<Rate>& rate,vector<movie> &mov)
  {  vector<map <string,double> > ret;
      map <string,int> ratings;
@@ -322,99 +322,6 @@ vector<map <string,double> > cal_rate_by_oc(vector<user> &us,map<string,int>& oc
  }
 
 
- vector<map <string,double> > genre_rate_by_oc(vector<user> &us,map<string,int>& oc,vector<Rate>& rate,vector<movie> &mov)
-  {  vector<map <string,double> > ret;
-     map <string,int> ratings;
-     map <string,int> num;
-    vector<user>::iterator finda_user;
-    vector<Rate>::iterator finda_rate;
-    vector<movie>::iterator finda_movie;
-    map <string,int> ::iterator finda_ret;
-    map <string,int> ::iterator finda_ratings;
-    map <string,int> ::iterator finda_occupation;
-    map <string,int> ::iterator finda_num;
-    finda_rate=rate.begin();
-    for(finda_occupation=oc.begin();finda_occupation!=oc.end();finda_occupation++)
-        {
-            //cout<<"a new occupation"<<endl;
-        for(finda_user=us.begin();finda_user!=us.end();finda_user++){
-
-            if((*finda_user).occupation==(*finda_occupation).first)
-                {
-
-               // cout<<"a new user"<<endl;
-
-                for(finda_rate=rate.begin();finda_rate!=rate.end();finda_rate++)
-                    {if((*finda_rate).user_id==(*finda_user).user_id)
-
-                   // cout<<"a new rate"<<endl;
-
-                        for(finda_movie=mov.begin();finda_movie!=mov.end();finda_movie++){
-                        if((*finda_rate).movie_id==(*finda_movie).movie_id)
-                           {
-
-                                 ratings.insert( pair<string, int>("test",0));
-                                num.insert( pair<string, int>("test",0));
-
-                              // cout<<(*finda_movie).movie_name<<endl;
-                            for(finda_ratings=ratings.begin();finda_ratings!=ratings.end();finda_ratings++){
-                                   vector<string>::iterator movie_gen_iter=(*finda_movie).genre.begin();
-                            for(movie_gen_iter=(*finda_movie).genre.begin();movie_gen_iter!=(*finda_movie).genre.end();movie_gen_iter++){
-                                if((*finda_ratings).first==(*movie_gen_iter)){
-                                (*finda_ratings).second+=(*finda_rate).rate;
-                                for(finda_num=num.begin();finda_num!=num.end();finda_num++)
-                                {
-                                        if((*finda_num).first==(*finda_ratings).first)
-                                         {
-                                                (*finda_num).second++;
-
-                                             }
-
-                                }
-                                break;
-                                }
-                               }
-                               }
-                                if(finda_ratings==ratings.end()){
-                                vector<string>::iterator movie_gen_iter=(*finda_movie).genre.begin();
-                                for(movie_gen_iter=(*finda_movie).genre.begin();movie_gen_iter!=(*finda_movie).genre.end();movie_gen_iter++){
-                                ratings.insert( pair<string, int>(*movie_gen_iter,(*finda_rate).rate));
-                                num.insert( pair<string, int>(*movie_gen_iter,1));
-                                    }
-
-                                }
-
-                              }
-                           }
-                        }
-                    }
-                }
-
-    map <string,double> average;
-    map <string,double> ::iterator iter_average=average.begin();
-
-    double ave=0.0;
-
-    finda_num=num.begin();
-    for(finda_ratings=ratings.begin();finda_ratings!=ratings.end();finda_ratings++)
-    {       if((*finda_num).second>0)
-        {ave=((*finda_ratings).second+0.0)/((*finda_num).second+0.0);
-         average.insert(pair<string, double>((*finda_ratings).first,ave));
-        }
-        finda_num++;
-    }
-    //cout<<endl<<"a new occupation"<<endl;
-    ret.push_back(average);
-   // printmap(average);
-    ratings.clear();
-    num.clear();
-    average.clear();
-    }
-    return ret;
- }
-
-
-
  map<string,double> top_rating(map<string,double> mov)
  {
     map<string,double> ret;
@@ -435,25 +342,24 @@ vector<map <string,double> > cal_rate_by_oc(vector<user> &us,map<string,int>& oc
     return ret;
  }
 
- map<string,double> genre_rating(map<string,double> gen)
- {
-    map<string,double> ret;
-    map <string,double> ::iterator iter;
-    double toprate=0.0;
-    for(iter=gen.begin();iter!=gen.end();iter++)
-    {   if(toprate<(*iter).second)
-        {
-            toprate=(*iter).second;
-       // cout<<" "<<temp<<endl;
-        }
-    }
-    for(iter=gen.begin();iter!=gen.end();iter++)
-    {
-        if(toprate==(*iter).second)
-          ret.insert( pair<string, double>((*iter).first,toprate));
-    }
-    return ret;
- }
+void print_movie_name_genre(map<string,double>  top_mov)
+  {
+      map <string,double> ::iterator iter;
+      vector<movie>::iterator class_iter;
+      vector<string>::iterator genre_iter;
+      for(iter=top_mov.begin();iter!=top_mov.end();iter++)
+      {
+        for(class_iter=mov.begin();class_iter!=mov.end();class_iter++)
+          if((*iter).first==(*class_iter).movie_name)
+            {
+           cout<<(*iter).first<<" "<<(*iter).second<<" ";
+            printvector((*class_iter).genre);
+            cout<<endl;
+            break;
+            }
+      }
+
+  }
 
  int main()
  {  user u;
@@ -476,23 +382,16 @@ vector<map <string,double> > cal_rate_by_oc(vector<user> &us,map<string,int>& oc
     map<string,double> top_rating_mov;
     oc_iter=occupation.begin();
 
-    map<string,double>genre_rating_;
-
-    vector<map<string,double> > genre_ret;
-    genre_ret=genre_rate_by_oc(us,occupation,rate,mov);
-    vector<map<string,double> > ::iterator iter_genre;
-     iter_genre=genre_ret.begin();
 
     for(iter_test=test.begin(); iter_test!=test.end(); iter_test++)
         {
         cout<<(*oc_iter).first<<endl;
         top_rating_mov=top_rating(*iter_test);
-        genre_rating_=genre_rating(*iter_genre);
+
         cout<<"top movies:"<<endl;
-        printmap(top_rating_mov);
-        cout<<"top genres:"<<endl;
-        printmap(genre_rating_);
-        iter_genre++;
+        print_movie_name_genre(top_rating_mov);
+       // printmap(top_rating_mov);
+
         oc_iter++;
         cout<<endl;
         }
