@@ -141,15 +141,17 @@ void  Rate::read_rate(Rate& r,vector<Rate>& rate)
      while(getline(fin,s))
     {
         split_blank(s,ret);
-        ret.pop_back();
-        string temp=*(ret.end()-1);
-        r.rate=atoi(temp.c_str());
-        ret.pop_back();
-        temp=*(ret.end()-1);
+
+        string temp=*(ret.begin());
         r.user_id=atoi(temp.c_str());
-         ret.pop_back();
-         temp=*(ret.end()-1);
-        r.movie_id=atoi(temp.c_str());
+         temp=*(ret.begin()+1);
+         r.movie_id=atoi(temp.c_str());
+          temp=*(ret.begin()+1+1);
+        r.rate=atoi(temp.c_str());
+/*
+        if(r.movie_id==415)
+            cout<<" "<<r.rate;
+            */
          ret.clear();
         rate.push_back(r);
     }
@@ -265,13 +267,15 @@ vector<map <string,double> > cal_rate_by_oc(vector<user> &us,map<string,int>& oc
                               // cout<<(*finda_movie).movie_name<<endl;
                         for(finda_ratings=ratings.begin();finda_ratings!=ratings.end();finda_ratings++){
                                 if((*finda_ratings).first==(*finda_movie).movie_name){
-                                (*finda_ratings).second+=(*finda_rate).rate;
+                              // if((*finda_ratings).first=="Apple Dumpling Gang, The (1975)")
+                            //   cout<<"A"<<" "<<(*finda_rate).rate<<" "<<(*finda_ratings).second<<" "<<(*finda_num).second<<" ";
+                                        (*finda_ratings).second+=(*finda_rate).rate;
                                 for(finda_num=num.begin();finda_num!=num.end();finda_num++)
                                 {
                                         if((*finda_num).first==(*finda_ratings).first)
                                          {
                                                 (*finda_num).second++;
-
+                                                break;
                                       //      if((*finda_num).second>2)
                                         //   cout<<(*finda_num).first<<" "<<(*finda_num).second<<endl;
                                              }
@@ -283,7 +287,7 @@ vector<map <string,double> > cal_rate_by_oc(vector<user> &us,map<string,int>& oc
                                 if(finda_ratings==ratings.end()){
                                 ratings.insert( pair<string, int>((*finda_movie).movie_name,(*finda_rate).rate));
                                 num.insert( pair<string, int>((*finda_movie).movie_name,1));
-                             //   cout<<(*finda_movie).movie_name<<"add to list"<<endl;
+                             //  cout<<(*finda_movie).movie_name<<"add to list"<<endl;
                                 }
                               }
                            }
@@ -304,7 +308,10 @@ vector<map <string,double> > cal_rate_by_oc(vector<user> &us,map<string,int>& oc
     finda_num=num.begin();
     for(finda_ratings=ratings.begin();finda_ratings!=ratings.end();finda_ratings++)
     {      if((*finda_num).second>2)
-        {ave=((*finda_ratings).second+0.0)/((*finda_num).second+0.0);
+        {
+
+
+            ave=((*finda_ratings).second+0.0)/((*finda_num).second+0.0);
          average.insert(pair<string, double>((*finda_ratings).first,ave));
         }
         finda_num++;
@@ -328,10 +335,17 @@ vector<map <string,double> > cal_rate_by_oc(vector<user> &us,map<string,int>& oc
     map <string,double> ::iterator iter;
     double toprate=0.0;
     for(iter=mov.begin();iter!=mov.end();iter++)
-    {   if(toprate<(*iter).second)
+    {
+        /*  if((*iter).first=="Shall We Dance? (1996)")
+            {
+                cout<<(*iter).first<<(*iter).second;
+            }
+
+*/
+        if(toprate<(*iter).second)
         {
             toprate=(*iter).second;
-       // cout<<" "<<temp<<endl;
+       // cout<<" "<<(*iter).first<<toprate<<endl;
         }
     }
     for(iter=mov.begin();iter!=mov.end();iter++)
@@ -352,7 +366,7 @@ void print_movie_name_genre(map<string,double>  top_mov)
         for(class_iter=mov.begin();class_iter!=mov.end();class_iter++)
           if((*iter).first==(*class_iter).movie_name)
             {
-           cout<<(*iter).first<<" "<<(*iter).second<<" ";
+           cout<<(*iter).first<<" "<<(*iter).second<<" "<<(*class_iter).movie_id;
             printvector((*class_iter).genre);
             cout<<endl;
             break;
@@ -388,9 +402,10 @@ void print_movie_name_genre(map<string,double>  top_mov)
         cout<<(*oc_iter).first<<endl;
         top_rating_mov=top_rating(*iter_test);
 
-        cout<<"top movies:"<<endl;
-        print_movie_name_genre(top_rating_mov);
-       // printmap(top_rating_mov);
+                 cout<<"top movies:"<<endl;
+                    print_movie_name_genre(top_rating_mov);
+
+     // print_movie_name_genre( top_rating_mov);
 
         oc_iter++;
         cout<<endl;
